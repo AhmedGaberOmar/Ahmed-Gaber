@@ -1,0 +1,110 @@
+/*light control with steering right and left*/
+int main(void)
+{
+	u8 globle_1=0;
+	u8 globle_2=255;
+	u8 globle_3=255;
+	u8 globle_4=0;
+	
+	u8 uart_var=0;
+	
+	clearbits(DDRC, 0x3E);
+	motor_init();
+	Bluetooth_Init();
+	
+	for (u8 i=0;i<5;i++)
+	{
+		LED_Matrix_init();
+	}
+	
+	LED_Matrix_normal(1,globle_1);
+	LED_Matrix_normal(2,globle_2);
+	LED_Matrix_normal(3,globle_3);
+	LED_Matrix_normal(4,globle_4);
+	setbits(DDRD, 0b11000000);
+	while(1){
+		uart_var=Bluetooth_receive_byte();
+		switch (uart_var)
+		{
+			case 'a':
+				//motor_forward();
+				break;
+			case 'b':
+				//motor_backword();
+				break;
+			case 's':
+				 //motor_stop();
+				break;
+			case 'r':
+				 motor_right();
+				globle_1=0;
+				globle_2=0xf0;
+				globle_3=255;
+				globle_4=255;
+				break;
+			case 'd':
+				 motor_halfRight();
+				globle_1=0;
+				globle_2=0xfc;
+				globle_3=255;
+				globle_4=0x0f;
+				break;
+			case 'n':
+				 motor_normal();
+				globle_1=0;
+				globle_2=255;
+				globle_3=255;
+				globle_4=0;
+				break;
+			case 'c':
+				 motor_halfLeft();
+				globle_1=0xf0;
+				globle_2=255;
+				globle_3=0x3f;
+				globle_4=0;
+				break;
+			case 'l':
+				 motor_left();
+				globle_1=255;
+				globle_2=255;
+				globle_3=0x0f;
+				globle_4=0;
+				break;
+			default:
+				break;
+		}
+		
+ 		if(getbits(PINC, 0x3E) == (1<<1)){
+ 					LED_Matrix_UP(1,globle_1);
+ 					LED_Matrix_UP(2,globle_2);
+ 					LED_Matrix_UP(3,globle_3);
+ 					LED_Matrix_UP(4,globle_4);
+ 				}
+ 				else if(getbits(PINC, 0x3E) == (1<<2)){
+ 					LED_Matrix_half_UP(1,globle_1);
+ 					LED_Matrix_half_UP(2,globle_2);
+ 					LED_Matrix_half_UP(3,globle_3);
+ 					LED_Matrix_half_UP(4,globle_4);
+ 				}
+ 				else if(getbits(PINC, 0x3E) == (1<<3)){
+ 					LED_Matrix_normal(1,globle_1);
+ 					LED_Matrix_normal(2,globle_2);
+ 					LED_Matrix_normal(3,globle_3);
+ 					LED_Matrix_normal(4,globle_4);
+ 				}
+ 				else if(getbits(PINC, 0x3E) == (1<<4)){
+ 					LED_Matrix_half_DOWN(1,globle_1);
+ 					LED_Matrix_half_DOWN(2,globle_2);
+ 					LED_Matrix_half_DOWN(3,globle_3);
+ 					LED_Matrix_half_DOWN(4,globle_4);
+ 				}
+ 				else if(getbits(PINC, 0x3E) == (1<<5)){
+ 					LED_Matrix_DOWN(1,globle_1);
+ 					LED_Matrix_DOWN(2,globle_2);
+ 					LED_Matrix_DOWN(3,globle_3);
+ 					LED_Matrix_DOWN(4,globle_4);
+ 				}
+ 				_delay_ms(100);		
+
+	}
+}

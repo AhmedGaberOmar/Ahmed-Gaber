@@ -1,0 +1,62 @@
+/* V2V */
+
+
+void server_task(u8* msg);
+void client_task(void);
+
+int main(void)
+{
+	
+	WiFi_init();
+	Bluetooth_Init();	
+	while(1)
+	{
+		// change the recieve function cause it will block the code so the wifi will not act like client until the any byte is recieved 
+		if(Bluetooth_receive_byte()=='z'){
+			server_task("tick\r\n");
+		}
+		client_task();
+	}
+}
+
+void server_task(u8* msg){
+	u8 try = 0;
+	try = 0;
+	u8 msgcpy[20] = {0};
+	strcpy(msgcpy, msg);
+	while(try<5){
+		try++;
+		if(WiFi_initServer())
+		break;
+	}
+	_delay_ms(10000);
+	try = 0;
+	while(try<2){
+		try++;
+		if(WiFi_send(msgcpy))
+		break;
+		
+	}
+	WiFi_reset();
+}
+
+
+void client_task(void){
+	u8* msg;
+	u8 msgcpy[20] = {0};
+	u8 try = 0;
+	if(WiFi_initClient()){
+		WiFi_clearBuffer();
+		while(try<25){
+			msg = WiFi_readData();
+			if(msg){
+				strcpy(msgcpy, msg);
+				server_task(msgcpy);
+				break;
+			}
+			try += 1;
+			_delay_ms(1000);
+		}
+		WiFi_reset();
+	}
+}

@@ -1,0 +1,33 @@
+/* mirror control */
+
+int main()
+{
+	int control;
+	Stepper_Init();
+	Bluetooth_Init();
+	DDRA |= 0X03;
+	while (1)
+	{
+		control = Bluetooth_receive_byte();
+		if(control=='E')
+		{
+			Stepper_forward(LEFT_MIRROR,100);
+		}
+		else if(control=='e')
+		{
+			Stepper_backward(LEFT_MIRROR,100);
+		}
+		else if(control=='X')
+		{
+			Stepper_forward(RIGHT_MIRROR,100);
+			PORTA |= 0X03;
+		}
+		else if(control=='x')
+		{
+			Stepper_backward(RIGHT_MIRROR,100);
+		}
+	}
+	
+	
+}
+

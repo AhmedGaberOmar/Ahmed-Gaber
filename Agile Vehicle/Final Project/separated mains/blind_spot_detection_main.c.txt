@@ -1,0 +1,31 @@
+/* blind spot detection */
+
+
+int main(void)
+{
+	DDRA |= 0x03;	
+	Ultra_Init();
+	f32 d;
+
+	while(1)
+	{
+		d =  Ultra_get_blind_distance(BACK_LEFT);
+		if(d <= 0.3){
+			PORTA |= (1<<1);
+		}
+		else{
+			PORTA &= ~(1<<1);
+		}
+		_delay_ms(250);
+		d =  Ultra_get_blind_distance(BACK_RIGHT);
+		if(d <= 0.3){
+			PORTA |= (1<<0);
+		}
+		else{
+			PORTA &= ~(1<<0);
+		}
+		_delay_ms(250);
+	}
+	
+}
+
